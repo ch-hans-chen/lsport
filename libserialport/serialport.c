@@ -555,7 +555,8 @@ SP_API enum sp_return sp_open(struct sp_port *port, enum sp_mode flags)
 #ifdef IUCLC
 	data.term.c_iflag &= ~IUCLC;
 #endif
-	data.term.c_oflag &= ~(OPOST | ONLCR | OCRNL | ONOCR | ONLRET);
+	//data.term.c_oflag &= ~(OPOST | ONLCR | OCRNL | ONOCR | ONLRET);
+	data.term.c_oflag &= ~(ONLCR | OCRNL | ONOCR | ONLRET);
 #ifdef OLCUC
 	data.term.c_oflag &= ~OLCUC;
 #endif
