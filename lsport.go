@@ -228,8 +228,18 @@ func Waiting(port Port) (int32, error) {
 // rxBuf size should not exceed the capacity of int32
 func BlockingRead(port Port, rxBuf []byte, timeout uint) (int32, error) {
 	var result int32 = SP_OK
+	var ev *C.struct_sp_event_set
+
+	C.sp_new_event_set(&ev)
+	C.sp_add_port_events(ev, port, C.SP_EVENT_RX_READY)
+	C.sp_wait(ev, C.uint(timeout))
+	C.sp_free_event_set(ev)
 
 	waiting, err := Waiting(port)
+	if waiting == 0 {
+		return waiting, errors.New("serial: timeout")
+	}
+
 	if err == nil {
 		// Passing to C so don't exceed the buffer length
 		length := minInt32(waiting, int32(len(rxBuf)))
@@ -238,8 +248,9 @@ func BlockingRead(port Port, rxBuf []byte, timeout uint) (int32, error) {
 			result = C.sp_blocking_read(port, (unsafe.Pointer(&rxBuf[0])), C.size_t(length), C.uint(timeout))
 		}
 		return result, checkResult(result)
+	} else {
+		return waiting, err
 	}
-	return waiting, checkResult(waiting)
 }
 
 // BlockingWrite attempts to write the string or buffer supplied to the port
