@@ -166,12 +166,21 @@ func Init(s *Conf, name string) (int32, error) {
 }
 
 // SetParams sets the common port options: baudrate, bits and stopbits.
-func SetParams(s *Conf, baud int, bits int, stopbits int) (int32, error) {
+func SetParams(s *Conf, baud int, bits int, stopbits int, parity string) (int32, error) {
 	var result int32 = SP_OK
 	C.sp_set_config_baudrate(s.newConfig, C.int(baud))
 	C.sp_set_config_bits(s.newConfig, C.int(bits))
-	C.sp_set_config_parity(s.newConfig, SP_PARITY_NONE)
 	C.sp_set_config_stopbits(s.newConfig, C.int(stopbits))
+
+	switch parity {
+	case "N":
+		C.sp_set_config_parity(s.newConfig, SP_PARITY_NONE)
+	case "O":
+		C.sp_set_config_parity(s.newConfig, SP_PARITY_ODD)
+	case "E":
+		C.sp_set_config_parity(s.newConfig, SP_PARITY_EVEN)
+	}
+
 	result = C.sp_set_config(s.Port, s.newConfig)
 	return result, checkResult(result)
 }
