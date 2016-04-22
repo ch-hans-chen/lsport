@@ -13,7 +13,7 @@ Using go get is, I think, impossible at the moment, at least in a cross platform
 way, as libserialport must be configured on the target system. So instead you 
 should proceed as follows
 
-	git clone http://github.com/kezl/lsport
+	git clone http://github.com/ch-hans-chen/lsport
 
 into the src directory of your GOPATH. 
 
@@ -25,6 +25,9 @@ Build libserialport with something like:
 	./autogen.sh
 	./configure
 	make
+
+**Note1: If you want to do cross-compile, please source your CC seting(ex. env.sh) between autogen.sh and configure
+**Note2: DO NOT source your CC setting before ./autogen.sh
 
 The desired outcome is a static libserialport.a that can be linked into your
 binary by cgo/go, so there is no need for a make install step unless you intend to 
@@ -41,14 +44,15 @@ see COPYING in the libserialport directory.
 
 Installing lsport
 #################
-You'll then need to alter the #cgo CFLAGS & #cgo LDFLAGS in lsport.go so they are 
-absolute, automation of absolute paths is coming to go1.5 as ${SRCDIR}, but for 
-now edit /your/actual/gopath/ below to whatever it really is:
+For Linux, export environment variables
 
-#cgo CFLAGS: -I/your/actual/gopath/src/github.com/kezl/lsport/libserialport/
-#cgo LDFLAGS: /your/actual/gopath/src/github.com/kezl/lsport/libserialport/.libs/libserialport.a
+export CGO_CFLAGS=-I$GOPATH/src/github.com/ch-hans-chen/lsport/libserialport/
+export CGO_LDFLAGS=$GOPATH/src/github.com/ch-hans-chen/lsport/libserialport/.libs/libserialport.a
 
- 
 Finally install lsport with:
 
-	go install github.com/kezl/lsport
+	go install github.com/ch-hans-chen/lsport
+
+Cross-Compile for i386 with:
+
+	env CGO_ENABLED=1 GOOS=linux GOARCH=386 go build -v github.com/ch-hans-chen/lsport
