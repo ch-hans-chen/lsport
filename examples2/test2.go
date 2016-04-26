@@ -29,5 +29,5 @@ func main() {
 	lsport.SetParams(&s, baudrate, databits, stopbits, parity)
 	lsport.Write(s.Port, []byte(message))
 	lsport.Close(&s)
-	return 0
+	return
 }
