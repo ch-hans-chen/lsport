@@ -259,6 +259,7 @@ func BlockingRead(port Port, rxBuf []byte, timeout uint) (int32, error) {
 func BlockingWrite(port Port, txBuf []byte, timeout uint16) (int32, error) {
 	var result int32 = SP_OK
 	result = C.sp_blocking_write(port, (unsafe.Pointer(&txBuf[0])), C.size_t(len(txBuf)), C.uint(timeout))
+	C.sp_drain(port)
 	return result, checkResult(result)
 }
 
